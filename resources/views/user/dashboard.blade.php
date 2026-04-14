@@ -102,7 +102,9 @@
                             </div>
 
                             <!-- Error Message -->
-                            <div id="errorMessage" style="display: none; padding: 15px; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; color: #721c24;"></div>
+                            <div id="errorMessage" style="display: none; padding: 15px; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; color: #721c24; margin-top: 15px;">
+                                <i class="fas fa-exclamation-circle"></i> <strong>Error:</strong> <span id="errorText"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -191,7 +193,7 @@
                 reader.readAsDataURL(file);
             } else {
                 errorMessage.style.display = 'block';
-                errorMessage.textContent = 'Please select a valid image file.';
+                document.getElementById('errorText').textContent = 'Please select a valid image file.';
             }
         }
 
@@ -202,7 +204,7 @@
             const file = sketchInput.files[0];
             if (!file) {
                 errorMessage.style.display = 'block';
-                errorMessage.textContent = 'Please select a sketch image.';
+                document.getElementById('errorText').textContent = 'Please select a sketch image.';
                 return;
             }
 
@@ -223,14 +225,48 @@
                     }
                 });
 
-                const data = await response.json();
+                // Get response as text first to handle parsing errors
+                const responseText = await response.text();
+                
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                } catch (jsonError) {
+                    loadingSpinner.style.display = 'none';
+                    generateBtn.disabled = false;
+                    errorMessage.style.display = 'block';
+                    
+                    // Log detailed debugging info
+                    console.error('=== JSON PARSING ERROR ===');
+                    console.error('Status Code:', response.status);
+                    console.error('Status Text:', response.statusText);
+                    console.error('Response Text:', responseText);
+                    console.error('JSON Error:', jsonError.message);
+                    console.log('First 500 chars of response:', responseText.substring(0, 500));
+                    console.error('========================');
+                    
+                    // Show appropriate error message
+                    if (response.status === 503) {
+                        document.getElementById('errorText').textContent = 'AI Service not configured. Administrator needs to set up AI in admin panel.';
+                    } else if (response.status >= 500) {
+                        document.getElementById('errorText').textContent = 'Server error. Please check the admin panel AI configuration.';
+                    } else {
+                        document.getElementById('errorText').textContent = 'Invalid server response. Please refresh and try again.';
+                    }
+                    return;
+                }
 
                 loadingSpinner.style.display = 'none';
                 generateBtn.disabled = false;
 
+                console.log(data);return false;
+
                 if (data.success) {
-                    document.getElementById('generatedDesign').src = data.design_url;
-                    document.getElementById('designPromptText').textContent = data.design_prompt;
+                    // document.getElementById('generatedDesign').src = data.design_url;
+                    // document.getElementById('designPromptText').textContent = data.design_prompt;
+
+                    document.getElementById('generatedDesign').src = data.sketch_url;
+                    document.getElementById('designPromptText').textContent = data.design_specification;
                     resultSection.style.display = 'block';
                     noDesignMessage.style.display = 'none';
                     errorMessage.style.display = 'none';
@@ -239,14 +275,16 @@
                     window.currentDesignUrl = data.design_url;
                 } else {
                     errorMessage.style.display = 'block';
-                    errorMessage.textContent = data.message || 'Failed to generate design.';
+                    document.getElementById('errorText').textContent = data.message || 'Failed to generate design.';
                 }
             } catch (error) {
                 loadingSpinner.style.display = 'none';
                 generateBtn.disabled = false;
                 errorMessage.style.display = 'block';
-                errorMessage.textContent = 'Error: ' + error.message;
-                console.error('Error:', error);
+                
+                // Detailed error logging for debugging
+                console.error('Fetch Error:', error);
+                document.getElementById('errorText').textContent = 'Network error: ' + error.message;
             }
         });
     });

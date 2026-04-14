@@ -76,6 +76,76 @@
             text-align: center;
         }
 
+        /* Dropdown Menu */
+        .nav-dropdown {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 15px 20px;
+            margin: 5px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: space-between;
+            transition: all 0.3s;
+        }
+
+        .nav-dropdown:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .nav-dropdown i:first-child {
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-dropdown .dropdown-icon {
+            width: 20px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .nav-dropdown.active .dropdown-icon {
+            transform: rotate(180deg);
+        }
+
+        .nav-submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .nav-submenu.show {
+            max-height: 300px;
+        }
+
+        .nav-submenu a {
+            color: rgba(255, 255, 255, 0.7);
+            padding: 12px 20px 12px 50px;
+            margin: 3px 10px;
+            border-radius: 6px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .nav-submenu a:hover,
+        .nav-submenu a.active {
+            background-color: var(--accent-color);
+            color: white;
+            padding-left: 55px;
+        }
+
+        .nav-submenu a i {
+            width: 16px;
+            text-align: center;
+            font-size: 12px;
+        }
+
         /* Main Content */
         .main-content {
             margin-left: 250px;
@@ -370,6 +440,23 @@
             <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                 <i class="fas fa-users"></i> Manage Users
             </a>
+            
+            <!-- AI Management Dropdown -->
+            <div class="nav-dropdown {{ request()->routeIs('admin.ai.*') ? 'active' : '' }}" onclick="toggleAIMenu(this)">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-robot"></i> Manage AI
+                </div>
+                <i class="fas fa-chevron-down dropdown-icon"></i>
+            </div>
+            <div class="nav-submenu {{ request()->routeIs('admin.ai.*') ? 'show' : '' }}" id="aiSubmenu">
+                <a href="{{ route('admin.ai.credentials') }}" class="nav-submenu-link {{ request()->routeIs('admin.ai.credentials') ? 'active' : '' }}">
+                    <i class="fas fa-key"></i> Credentials
+                </a>
+                <a href="{{ route('admin.ai.agents') }}" class="nav-submenu-link {{ request()->routeIs('admin.ai.agents') ? 'active' : '' }}">
+                    <i class="fas fa-cogs"></i> AI Agents
+                </a>
+            </div>
+
             <a href="#" class="nav-link">
                 <i class="fas fa-chart-bar"></i> Manage Analytics
             </a>
@@ -381,6 +468,14 @@
                 </button>
             </form>
         </nav>
+
+        <script>
+            function toggleAIMenu(element) {
+                element.classList.toggle('active');
+                const submenu = element.nextElementSibling;
+                submenu.classList.toggle('show');
+            }
+        </script>
     </div>
 
     <!-- Main Content -->

@@ -23,5 +23,8 @@ class DatabaseSeeder extends Seeder
 
         // Create test admin
         $this->call(AdminSeeder::class);
+
+        // Seed AI Providers
+        $this->call(AIProviderSeeder::class);
     }
 }
