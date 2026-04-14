@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\JewelryDesignController;
 
 // Public routes
 // Route::get('/', function () {
@@ -22,6 +23,10 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    
+    // Jewelry Design Routes
+    Route::post('/design/generate', [JewelryDesignController::class, 'generateDesign'])->name('design.generate');
+    Route::get('/design/designs', [JewelryDesignController::class, 'getDesigns'])->name('design.list');
 });
 
 // Admin Authentication Routes
