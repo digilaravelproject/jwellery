@@ -45,4 +45,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Get all design generations for this user
+     */
+    public function designGenerations()
+    {
+        return $this->hasMany(DesignGeneration::class);
+    }
 }

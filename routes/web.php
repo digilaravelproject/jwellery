@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\JewelryDesignController;
 use App\Http\Controllers\AIManagementController;
 use App\Http\Controllers\SelectionManagementController;
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\DebugAIController;
 
 // Public routes
@@ -116,6 +117,10 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     // Design Selection Management Routes
     Route::resource('selections', SelectionManagementController::class, ['as' => 'admin']);
     Route::get('/selections-api/active', [SelectionManagementController::class, 'getActive'])->name('admin.selections.api.active');
+
+    // Design Analytics Routes
+    Route::resource('analytics', AnalyticsController::class, ['as' => 'admin', 'only' => ['index', 'show', 'destroy']]);
+    Route::get('/analytics/statistics', [AnalyticsController::class, 'statistics'])->name('admin.analytics.statistics');
     
     // Debug routes for AI configuration (admin only)
     Route::get('/debug/ai-config', function() {

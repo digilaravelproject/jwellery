@@ -42,6 +42,7 @@
                             </h6>
                             <form id="sketchUploadForm" enctype="multipart/form-data">
                                 @csrf
+
                                 <div class="form-group mb-3">
                                     <div class="upload-area" id="uploadArea" 
                                          style="border: 3px dashed var(--primary-color); border-radius: 10px; padding: 40px; text-align: center; cursor: pointer; transition: all 0.3s ease; background-color: rgba(218, 165, 32, 0.05);">
@@ -55,20 +56,20 @@
                                     </div>
                                 </div>
                                 
+                                <!-- Selections - Display in One Row -->
+                                <div id="selectionsContainer" style="margin-bottom: 10px;">
+                                    <h6 style="color: var(--primary-color); font-weight: bold; margin-bottom: 12px;">
+                                        <i class="fas fa-sliders-h"></i> Design Options
+                                    </h6>
+                                    <div id="selectionsContent" style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-start;"></div>
+                                </div>
+
                                 <!-- Preview Section -->
                                 <div id="previewSection" style="display: none; margin-top: 20px;">
                                     <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; background-color: #f9f9f9;">
                                         <img id="sketchPreview" src="" alt="Sketch Preview" style="max-width: 100%; max-height: 250px; border-radius: 5px;">
                                         <p class="mt-3 mb-1"><small style="color: #666;"><strong>File Selected:</strong> <span id="fileName"></span></small></p>
                                     </div>
-                                </div>
-
-                                <!-- Selections -->
-                                <div id="selectionsContainer" style="margin-top: 20px; display: none;">
-                                    <h6 style="color: var(--primary-color); font-weight: bold; margin-bottom: 15px;">
-                                        <i class="fas fa-sliders-h"></i> Design Options
-                                    </h6>
-                                    <div id="selectionsContent"></div>
                                 </div>
 
                                 <button type="submit" id="generateBtn" class="btn btn-primary btn-block mt-4" style="background-color: var(--primary-color); border-color: var(--primary-color); width: 100%; padding: 12px; font-weight: bold; border-radius: 8px;">
@@ -147,6 +148,36 @@
         transform: translateY(-2px);
         box-shadow: 0 6px 12px rgba(218, 165, 32, 0.3);
     }
+
+    /* Selection Styling */
+    #selectionsContent select {
+        background-color: #666;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 15px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex: 1;
+        min-width: 200px;
+        font-size: 14px;
+    }
+
+    #selectionsContent select:hover {
+        background-color: #555;
+    }
+
+    #selectionsContent select:focus {
+        outline: none;
+        background-color: #555;
+        box-shadow: 0 0 5px rgba(218, 165, 32, 0.5);
+    }
+
+    #selectionsContent select option {
+        background-color: #555;
+        color: white;
+    }
 </style>
 
 <script>
@@ -165,6 +196,7 @@
 
         let allSelections = [];
         let userSelections = {};
+        let generatedDesignUrl = null;
 
         // Load selections on page load
         loadSelections();
@@ -204,7 +236,6 @@
                     document.getElementById('sketchPreview').src = e.target.result;
                     document.getElementById('fileName').textContent = file.name;
                     previewSection.style.display = 'block';
-                    selectionsContainer.style.display = allSelections.length > 0 ? 'block' : 'none';
                     errorMessage.style.display = 'none';
                 };
                 reader.readAsDataURL(file);
@@ -235,18 +266,7 @@
             selectionsContent.innerHTML = '';
             
             allSelections.forEach((selection, index) => {
-                const div = document.createElement('div');
-                div.className = 'form-group mb-3';
-                
-                const label = document.createElement('label');
-                label.className = 'form-label';
-                label.style.color = 'var(--primary-color)';
-                label.style.fontWeight = '600';
-                label.innerHTML = `<i class="fas fa-check-square"></i> ${selection.title}`;
-                
                 const select = document.createElement('select');
-                select.className = 'form-control';
-                select.style.borderRadius = '8px';
                 select.name = 'selection_' + selection.id;
                 select.id = 'selection_' + selection.id;
                 select.addEventListener('change', (e) => {
@@ -264,16 +284,16 @@
                 select.appendChild(defaultOption);
                 
                 // Add selection values
-                selection.values.forEach(value => {
-                    const option = document.createElement('option');
-                    option.value = value;
-                    option.textContent = value;
-                    select.appendChild(option);
-                });
+                if (selection.values && Array.isArray(selection.values)) {
+                    selection.values.forEach(value => {
+                        const option = document.createElement('option');
+                        option.value = value;
+                        option.textContent = value;
+                        select.appendChild(option);
+                    });
+                }
                 
-                div.appendChild(label);
-                div.appendChild(select);
-                selectionsContent.appendChild(div);
+                selectionsContent.appendChild(select);
             });
         }
 
@@ -358,16 +378,15 @@
                 if (data.success) {
                     if (data.design_type === 'image') {
                         document.getElementById('generatedDesign').src = data.design_url;
+                        generatedDesignUrl = data.design_url;
                     } else {
                         document.getElementById('generatedDesign').src = data.sketch_url;
+                        generatedDesignUrl = data.sketch_url;
                     }
                     document.getElementById('designPromptText').textContent = data.design_specification;
                     resultSection.style.display = 'block';
                     noDesignMessage.style.display = 'none';
                     errorMessage.style.display = 'none';
-                    
-                    // Store the design URL for download
-                    window.currentDesignUrl = data.design_url;
                 } else {
                     errorMessage.style.display = 'block';
                     document.getElementById('errorText').textContent = data.message || 'Failed to generate design.';
@@ -385,13 +404,22 @@
     });
 
     function downloadDesign() {
-        if (window.currentDesignUrl) {
+        // Get the current design URL from the img element
+        const designImg = document.getElementById('generatedDesign');
+        const designUrl = designImg ? designImg.src : null;
+        
+        if (designUrl && designUrl.trim() !== '') {
+            // Create a link element and trigger download
             const link = document.createElement('a');
-            link.href = window.currentDesignUrl;
+            link.href = designUrl;
             link.download = 'jewelry-design-' + new Date().getTime() + '.png';
+            link.crossOrigin = 'anonymous';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+        } else {
+            console.warn('No design URL available for download');
+            alert('No design to download. Please generate a design first.');
         }
     }
 </script>

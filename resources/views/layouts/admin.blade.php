@@ -460,9 +460,10 @@
                 </a>
             </div>
 
-            <a href="#" class="nav-link">
+            <a href="{{ route('admin.analytics.index') }}" class="nav-link {{ request()->routeIs('admin.analytics.*') ? 'active' : '' }}">
                 <i class="fas fa-chart-bar"></i> Manage Analytics
-            </a>            <a href="{{ route('admin.selections.index') }}" class="nav-link {{ request()->routeIs('admin.selections.*') ? 'active' : '' }}">
+            </a>
+            <a href="{{ route('admin.selections.index') }}" class="nav-link {{ request()->routeIs('admin.selections.*') ? 'active' : '' }}">
                 <i class="fas fa-layer-group"></i> Manage Selection
             </a>            <hr style="border-color: rgba(255,255,255,0.1); margin: 20px 0;">
             <form action="{{ route('admin.logout') }}" method="POST">

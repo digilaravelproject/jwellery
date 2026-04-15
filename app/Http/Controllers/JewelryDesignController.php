@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Services\AIService;
+use App\Models\DesignGeneration;
+use Illuminate\Support\Facades\Auth;
 
 class JewelryDesignController extends Controller
 {
@@ -86,16 +88,40 @@ class JewelryDesignController extends Controller
                      'ai_provider' => $providerName,
                      'design_type' => 'image',
                  ];
+
+                 // Save to database
+                 DesignGeneration::create([
+                     'user_id' => Auth::id(),
+                     'sketch_path' => $sketchPath,
+                     'prompt' => $systemPrompt,
+                     'generated_design_path' => $imageName,
+                     'design_specification' => 'Generated directly from sketch using AI.',
+                     'design_type' => 'image',
+                     'ai_provider' => $providerName,
+                 ]);
             } else {
+                 $designSpecification = str_replace(["\r", "\n", "\t"], " ", strip_tags($designPrompt));
+                 
                  $responseData = [
                      'success' => true,
                      'message' => 'Jewelry design specification generated successfully!',
                      'sketch_url' => $sketchUrl,
-                     'design_specification' => str_replace(["\r", "\n", "\t"], " ", strip_tags($designPrompt)),
+                     'design_specification' => $designSpecification,
                      'sketch_path' => $sketchPath,
                      'ai_provider' => $providerName,
                      'design_type' => 'specification',
                  ];
+
+                 // Save to database
+                 DesignGeneration::create([
+                     'user_id' => Auth::id(),
+                     'sketch_path' => $sketchPath,
+                     'prompt' => $systemPrompt,
+                     'generated_design_path' => null,
+                     'design_specification' => $designSpecification,
+                     'design_type' => 'specification',
+                     'ai_provider' => $providerName,
+                 ]);
             }
 
             return response()->json($responseData, 200);
