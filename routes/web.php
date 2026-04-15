@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\JewelryDesignController;
 use App\Http\Controllers\AIManagementController;
+use App\Http\Controllers\SelectionManagementController;
 use App\Http\Controllers\DebugAIController;
 
 // Public routes
@@ -29,6 +30,9 @@ Route::middleware('auth')->group(function () {
     // Jewelry Design Routes
     Route::post('/design/generate', [JewelryDesignController::class, 'generateDesign'])->name('design.generate');
     Route::get('/design/designs', [JewelryDesignController::class, 'getDesigns'])->name('design.list');
+    
+    // Selections API for frontend
+    Route::get('/selections/active', [SelectionManagementController::class, 'getActive'])->name('selections.active');
     
     // Debug AI Status (for troubleshooting)
     Route::get('/debug/ai-status', [DebugAIController::class, 'checkStatus'])->name('debug.ai.status');
@@ -101,7 +105,17 @@ Route::middleware('admin')->prefix('admin')->group(function () {
         Route::get('/agents', [AIManagementController::class, 'agents'])->name('admin.ai.agents');
         Route::post('/agents/select', [AIManagementController::class, 'saveAgentSelection'])->name('admin.ai.agents.select');
         Route::get('/agents/{feature}/active', [AIManagementController::class, 'getActiveSelection'])->name('admin.ai.agents.active');
+
+        Route::get('/prompts', [AIManagementController::class, 'prompts'])->name('admin.ai.prompts');
+        Route::post('/prompts', [AIManagementController::class, 'storePrompt'])->name('admin.ai.prompts.store');
+        Route::put('/prompts/{id}', [AIManagementController::class, 'updatePrompt'])->name('admin.ai.prompts.update');
+        Route::delete('/prompts/{id}', [AIManagementController::class, 'deletePrompt'])->name('admin.ai.prompts.delete');
+        Route::post('/prompts/{id}/activate', [AIManagementController::class, 'activatePrompt'])->name('admin.ai.prompts.activate');
     });
+
+    // Design Selection Management Routes
+    Route::resource('selections', SelectionManagementController::class, ['as' => 'admin']);
+    Route::get('/selections-api/active', [SelectionManagementController::class, 'getActive'])->name('admin.selections.api.active');
     
     // Debug routes for AI configuration (admin only)
     Route::get('/debug/ai-config', function() {

@@ -455,12 +455,16 @@
                 <a href="{{ route('admin.ai.agents') }}" class="nav-submenu-link {{ request()->routeIs('admin.ai.agents') ? 'active' : '' }}">
                     <i class="fas fa-cogs"></i> AI Agents
                 </a>
+                <a href="{{ route('admin.ai.prompts') }}" class="nav-submenu-link {{ request()->routeIs('admin.ai.prompts') ? 'active' : '' }}">
+                    <i class="fas fa-comment-dots"></i> Manage Prompts
+                </a>
             </div>
 
             <a href="#" class="nav-link">
                 <i class="fas fa-chart-bar"></i> Manage Analytics
-            </a>
-            <hr style="border-color: rgba(255,255,255,0.1); margin: 20px 0;">
+            </a>            <a href="{{ route('admin.selections.index') }}" class="nav-link {{ request()->routeIs('admin.selections.*') ? 'active' : '' }}">
+                <i class="fas fa-layer-group"></i> Manage Selection
+            </a>            <hr style="border-color: rgba(255,255,255,0.1); margin: 20px 0;">
             <form action="{{ route('admin.logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="nav-link w-100 text-start" style="border: none; background: none;">

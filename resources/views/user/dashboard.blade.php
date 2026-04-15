@@ -63,6 +63,14 @@
                                     </div>
                                 </div>
 
+                                <!-- Selections -->
+                                <div id="selectionsContainer" style="margin-top: 20px; display: none;">
+                                    <h6 style="color: var(--primary-color); font-weight: bold; margin-bottom: 15px;">
+                                        <i class="fas fa-sliders-h"></i> Design Options
+                                    </h6>
+                                    <div id="selectionsContent"></div>
+                                </div>
+
                                 <button type="submit" id="generateBtn" class="btn btn-primary btn-block mt-4" style="background-color: var(--primary-color); border-color: var(--primary-color); width: 100%; padding: 12px; font-weight: bold; border-radius: 8px;">
                                     <i class="fas fa-magic"></i> Generate Design
                                 </button>
@@ -152,6 +160,14 @@
         const errorMessage = document.getElementById('errorMessage');
         const loadingSpinner = document.getElementById('loadingSpinner');
         const generateBtn = document.getElementById('generateBtn');
+        const selectionsContainer = document.getElementById('selectionsContainer');
+        const selectionsContent = document.getElementById('selectionsContent');
+
+        let allSelections = [];
+        let userSelections = {};
+
+        // Load selections on page load
+        loadSelections();
 
         // Click to upload
         uploadArea.addEventListener('click', () => sketchInput.click());
@@ -188,6 +204,7 @@
                     document.getElementById('sketchPreview').src = e.target.result;
                     document.getElementById('fileName').textContent = file.name;
                     previewSection.style.display = 'block';
+                    selectionsContainer.style.display = allSelections.length > 0 ? 'block' : 'none';
                     errorMessage.style.display = 'none';
                 };
                 reader.readAsDataURL(file);
@@ -195,6 +212,69 @@
                 errorMessage.style.display = 'block';
                 document.getElementById('errorText').textContent = 'Please select a valid image file.';
             }
+        }
+
+        function loadSelections() {
+            fetch('{{ route("selections.active") }}')
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to load selections');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success && data.selections && data.selections.length > 0) {
+                        allSelections = data.selections;
+                        renderSelections();
+                    }
+                })
+                .catch(error => {
+                    console.warn('Warning: Could not load selections -', error.message);
+                });
+        }
+
+        function renderSelections() {
+            selectionsContent.innerHTML = '';
+            
+            allSelections.forEach((selection, index) => {
+                const div = document.createElement('div');
+                div.className = 'form-group mb-3';
+                
+                const label = document.createElement('label');
+                label.className = 'form-label';
+                label.style.color = 'var(--primary-color)';
+                label.style.fontWeight = '600';
+                label.innerHTML = `<i class="fas fa-check-square"></i> ${selection.title}`;
+                
+                const select = document.createElement('select');
+                select.className = 'form-control';
+                select.style.borderRadius = '8px';
+                select.name = 'selection_' + selection.id;
+                select.id = 'selection_' + selection.id;
+                select.addEventListener('change', (e) => {
+                    userSelections[selection.id] = {
+                        title: selection.title,
+                        value: e.target.value,
+                        template: selection.prompt_template
+                    };
+                });
+                
+                // Add default option
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = `Select ${selection.title}...`;
+                select.appendChild(defaultOption);
+                
+                // Add selection values
+                selection.values.forEach(value => {
+                    const option = document.createElement('option');
+                    option.value = value;
+                    option.textContent = value;
+                    select.appendChild(option);
+                });
+                
+                div.appendChild(label);
+                div.appendChild(select);
+                selectionsContent.appendChild(div);
+            });
         }
 
         // Form submission
@@ -211,6 +291,20 @@
             const formData = new FormData();
             formData.append('sketch', file);
             formData.append('_token', document.querySelector('input[name="_token"]').value);
+
+            // Add user selections to form data
+            let customPromptPart = '';
+            for (const selectionId in userSelections) {
+                const selection = userSelections[selectionId];
+                if (selection.value) {
+                    const promptText = selection.template.replace('{value}', selection.value);
+                    customPromptPart += promptText + ' ';
+                }
+            }
+            
+            if (customPromptPart) {
+                formData.append('user_selections', customPromptPart.trim());
+            }
 
             loadingSpinner.style.display = 'block';
             generateBtn.disabled = true;
@@ -259,13 +353,14 @@
                 loadingSpinner.style.display = 'none';
                 generateBtn.disabled = false;
 
-                console.log(data);return false;
+                console.log('AI Response:', data);
 
                 if (data.success) {
-                    // document.getElementById('generatedDesign').src = data.design_url;
-                    // document.getElementById('designPromptText').textContent = data.design_prompt;
-
-                    document.getElementById('generatedDesign').src = data.sketch_url;
+                    if (data.design_type === 'image') {
+                        document.getElementById('generatedDesign').src = data.design_url;
+                    } else {
+                        document.getElementById('generatedDesign').src = data.sketch_url;
+                    }
                     document.getElementById('designPromptText').textContent = data.design_specification;
                     resultSection.style.display = 'block';
                     noDesignMessage.style.display = 'none';

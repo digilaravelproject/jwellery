@@ -19,6 +19,7 @@ class JewelryDesignController extends Controller
             // First, validate the request
             $request->validate([
                 'sketch' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120', // 5MB max
+                'user_selections' => 'nullable|string', // User's design selections
             ]);
 
             // Verify that AI is configured before proceeding
@@ -40,26 +41,62 @@ class JewelryDesignController extends Controller
             // Read the sketch image as base64
             $imageData = base64_encode(file_get_contents($sketchFullPath));
 
+            // Fetch active prompt from DB or fallback to default
+            $activePrompt = \App\Models\AIPrompt::where('is_active', true)->first();
+            $systemPrompt = $activePrompt ? $activePrompt->prompt_text : 'You are a jewelry designer. Analyze this hand-drawn jewelry sketch and create a detailed, descriptive specification for a professional, luxury jewelry design. Include: jewelry type, style details, materials (gold, silver, diamonds, gems, etc.), design elements, dimensions, estimated craftsmanship time, and overall aesthetic. Format as a clear, professional jewelry design specification.';
+
+            // Append user selections to the system prompt if provided
+            if ($request->filled('user_selections')) {
+                $userSelectionsText = $request->input('user_selections');
+                $systemPrompt .= "\n\nAdditional Design Requirements from User: " . $userSelectionsText;
+            }
+
             // Step 1: Use Vision model to analyze the sketch and generate a detailed prompt
             $designPrompt = $this->aiService->analyzeImage(
                 $imageData,
-                'You are a jewelry designer. Analyze this hand-drawn jewelry sketch and create a detailed, descriptive specification for a professional, luxury jewelry design. Include: jewelry type, style details, materials (gold, silver, diamonds, gems, etc.), design elements, dimensions, estimated craftsmanship time, and overall aesthetic. Format as a clear, professional jewelry design specification.'
+                $systemPrompt
             );
 
             // Get provider info
             $providerName = $this->aiService->getProviderName();
 
-            // Prepare response with design specification
-            // For Open Router or other non-image-generating providers, return the design specification
-            $responseData = [
-                'success' => true,
-                'message' => 'Jewelry design specification generated successfully!',
-                'sketch_url' => $sketchUrl,
-                'design_specification' => str_replace(["\r", "\n", "\t"], " ", strip_tags($designPrompt)),
-                'sketch_path' => $sketchPath,
-                'ai_provider' => $providerName,
-                'design_type' => 'specification', // Text-based design spec instead of image
-            ];
+            if (strpos($designPrompt, 'IMAGE:') === 0) {
+                 $generatedImageRaw = substr($designPrompt, 6);
+                 
+                 // Save the image
+                 $imageName = 'designs/' . uniqid('design_') . '.png';
+                 if (strpos($generatedImageRaw, 'data:image') === 0) {
+                     $base64Data = substr($generatedImageRaw, strpos($generatedImageRaw, ',') + 1);
+                     $imageContents = base64_decode($base64Data);
+                     Storage::disk('public')->put($imageName, $imageContents);
+                 } else {
+                     // For remote URLs
+                     $imageContents = file_get_contents($generatedImageRaw);
+                     Storage::disk('public')->put($imageName, $imageContents);
+                 }
+                 $designUrl = Storage::url($imageName);
+
+                 $responseData = [
+                     'success' => true,
+                     'message' => 'Jewelry design generated successfully!',
+                     'sketch_url' => $sketchUrl,
+                     'design_url' => asset($designUrl),
+                     'design_specification' => 'Generated directly from sketch using AI.',
+                     'sketch_path' => $sketchPath,
+                     'ai_provider' => $providerName,
+                     'design_type' => 'image',
+                 ];
+            } else {
+                 $responseData = [
+                     'success' => true,
+                     'message' => 'Jewelry design specification generated successfully!',
+                     'sketch_url' => $sketchUrl,
+                     'design_specification' => str_replace(["\r", "\n", "\t"], " ", strip_tags($designPrompt)),
+                     'sketch_path' => $sketchPath,
+                     'ai_provider' => $providerName,
+                     'design_type' => 'specification',
+                 ];
+            }
 
             return response()->json($responseData, 200);
 

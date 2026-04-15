@@ -266,6 +266,77 @@ class AIManagementController extends Controller
     }
 
     /**
+     * Show AI prompts management page
+     */
+    public function prompts()
+    {
+        $prompts = \App\Models\AIPrompt::latest()->get();
+        return view('admin.ai.prompts', compact('prompts'));
+    }
+
+    /**
+     * Store new AI prompt
+     */
+    public function storePrompt(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'prompt_text' => 'required|string',
+        ]);
+
+        $prompt = \App\Models\AIPrompt::create($request->all());
+
+        // Make active if it's the first
+        if (\App\Models\AIPrompt::count() === 1) {
+            $prompt->update(['is_active' => true]);
+        }
+
+        return redirect()->route('admin.ai.prompts')->with('success', 'Prompt created successfully.');
+    }
+
+    /**
+     * Update AI prompt
+     */
+    public function updatePrompt(Request $request, $id)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'prompt_text' => 'required|string',
+        ]);
+
+        $prompt = \App\Models\AIPrompt::findOrFail($id);
+        $prompt->update([
+            'title' => $request->title,
+            'prompt_text' => $request->prompt_text
+        ]);
+
+        return redirect()->route('admin.ai.prompts')->with('success', 'Prompt updated successfully.');
+    }
+
+    /**
+     * Delete AI prompt
+     */
+    public function deletePrompt($id)
+    {
+        $prompt = \App\Models\AIPrompt::findOrFail($id);
+        $prompt->delete();
+
+        return redirect()->route('admin.ai.prompts')->with('success', 'Prompt deleted successfully.');
+    }
+
+    /**
+     * Activate an AI prompt
+     */
+    public function activatePrompt($id)
+    {
+        \App\Models\AIPrompt::query()->update(['is_active' => false]);
+        $prompt = \App\Models\AIPrompt::findOrFail($id);
+        $prompt->update(['is_active' => true]);
+
+        return redirect()->route('admin.ai.prompts')->with('success', 'Prompt activated successfully.');
+    }
+
+    /**
      * Test OpenAI API Key
      */
     private function testOpenAICredential($apiKey, &$message)

@@ -56,10 +56,31 @@ class OpenRouterService
 
             $response = $this->makeRequest($payload);
 
-            if (isset($response['choices'][0]['message']['content'])) {
+            // Handle multimodal content array
+            if (isset($response['choices'][0]['message']['content']) && is_array($response['choices'][0]['message']['content'])) {
+                foreach ($response['choices'][0]['message']['content'] as $item) {
+                     if (isset($item['type']) && $item['type'] === 'image_url') {
+                         return 'IMAGE:' . $item['image_url']['url'];
+                     }
+                }
+            }
+
+            // Handle choices[0].message.images array
+            if (isset($response['choices'][0]['message']['images'][0]['image_url']['url'])) {
+                return 'IMAGE:' . $response['choices'][0]['message']['images'][0]['image_url']['url'];
+            }
+
+            // Handle choices[0].images array (parallel to message)
+            if (isset($response['choices'][0]['images'][0]['image_url']['url'])) {
+                return 'IMAGE:' . $response['choices'][0]['images'][0]['image_url']['url'];
+            }
+
+            // Normal text extraction
+            if (isset($response['choices'][0]['message']['content']) && is_string($response['choices'][0]['message']['content'])) {
                 return $response['choices'][0]['message']['content'];
             }
 
+            \Log::error('OpenRouter Failed Response: ' . json_encode($response));
             throw new \Exception('Invalid response from Open Router');
         } catch (\Exception $e) {
             throw new \Exception('Open Router image analysis failed: ' . $e->getMessage());
