@@ -3,117 +3,104 @@
 @section('title', 'Dashboard - Jewellery Store')
 
 @section('content')
-<div class="my-5">
+<div class="dashboard-container">
     <!-- Welcome Header -->
-    <div class="row mb-5">
-        <div class="col-md-12">
-            <div class="card shadow-lg" style="background: linear-gradient(135deg, var(--primary-color)15 0%, #ffffff 100%); border: 2px solid var(--primary-color);">
-                <div class="card-body p-5 text-center">
-                    <div style="font-size: 60px; margin-bottom: 20px;">
-                        <i class="fas fa-crown" style="color: var(--primary-color);"></i>
-                    </div>
-                    <h1 class="mb-3" style="font-size: 48px; color: var(--dark-bg);">
-                        Welcome, <span style="color: var(--primary-color);">{{ Auth::user()->name }}!</span>
-                    </h1>
-                    <p class="lead mb-0" style="color: #666; font-size: 18px;">
-                        You have successfully signed in to your account
-                    </p>
-                </div>
+    <?php /*<div class="welcome-section mb-5">
+        <div class="welcome-card">
+            <div class="welcome-icon">
+                <i class="fas fa-crown"></i>
             </div>
+            <h1 class="welcome-title">Welcome, <span>{{ Auth::user()->name }}!</span></h1>
+            <p class="welcome-subtitle">You have successfully signed in to your account</p>
         </div>
-    </div>
+    </div>*/ ?>
 
     <!-- Jewelry Design Generator Section -->
-    <div class="row mb-5">
-        <div class="col-md-12">
-            <div class="card shadow-lg" style="border: 2px solid var(--primary-color); overflow: hidden;">
-                <div class="card-header" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color)dd 100%); color: white; padding: 20px;">
-                    <h5 class="mb-0">
-                        <i class="fas fa-wand-magic-sparkles"></i> AI Jewelry Design Generator
-                    </h5>
-                    <small>Upload your sketch and let AI transform it into a stunning jewelry design</small>
-                </div>
-                <div class="card-body p-5">
-                    <div class="row">
-                        <!-- Upload Section -->
-                        <div class="col-md-6">
-                            <h6 class="mb-4" style="color: var(--primary-color); font-weight: bold;">
-                                <i class="fas fa-upload"></i> Upload Your Sketch
-                            </h6>
-                            <form id="sketchUploadForm" enctype="multipart/form-data">
-                                @csrf
+    <div class="design-generator-section">
+        <div class="design-card">
+            <div class="design-card-header">
+                <h5 class="design-title">
+                    <i class="fas fa-wand-magic-sparkles"></i> AI Jewelry Design Generator
+                </h5>
+                <p class="design-subtitle">Upload your sketch and let AI transform it into a stunning jewelry design</p>
+            </div>
+            <div class="design-card-body">
+                <div class="design-content">
+                    <!-- Upload Section -->
+                    <div class="upload-section">
+                        <h6 class="section-title">
+                            <i class="fas fa-upload"></i> Upload Your Sketch
+                        </h6>
+                        <form id="sketchUploadForm" enctype="multipart/form-data">
+                            @csrf
 
-                                <div class="form-group mb-3">
-                                    <div class="upload-area" id="uploadArea" 
-                                         style="border: 3px dashed var(--primary-color); border-radius: 10px; padding: 40px; text-align: center; cursor: pointer; transition: all 0.3s ease; background-color: rgba(218, 165, 32, 0.05);">
-                                        <div style="font-size: 48px; margin-bottom: 15px;">
-                                            <i class="fas fa-cloud-arrow-up" style="color: var(--primary-color);"></i>
-                                        </div>
-                                        <h6 style="color: var(--primary-color); margin-bottom: 10px;">Drag & Drop Your Sketch</h6>
-                                        <p style="color: #666; margin-bottom: 0;">or click to browse</p>
-                                        <small style="color: #999;">Supported: JPG, PNG, GIF (Max 5MB)</small>
-                                        <input type="file" id="sketchInput" name="sketch" accept="image/*" style="display: none;">
+                            <!-- Selections - Display in One Row -->
+                            <div id="selectionsContainer" class="selections-container">
+                                <h6 class="selections-title">
+                                    <i class="fas fa-sliders-h"></i> Design Options
+                                </h6>
+                                <div id="selectionsContent" class="selections-content"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="upload-area" id="uploadArea">
+                                    <div class="upload-icon">
+                                        <i class="fas fa-cloud-arrow-up"></i>
                                     </div>
+                                    <h6 class="upload-label">Drag & Drop Your Sketch</h6>
+                                    <p class="upload-sublabel">or click to browse</p>
+                                    <small class="upload-hint">Supported: JPG, PNG, GIF (Max 5MB)</small>
+                                    <input type="file" id="sketchInput" name="sketch" accept="image/*" style="display: none;">
                                 </div>
-                                
-                                <!-- Selections - Display in One Row -->
-                                <div id="selectionsContainer" style="margin-bottom: 10px;">
-                                    <h6 style="color: var(--primary-color); font-weight: bold; margin-bottom: 12px;">
-                                        <i class="fas fa-sliders-h"></i> Design Options
-                                    </h6>
-                                    <div id="selectionsContent" style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-start;"></div>
-                                </div>
-
-                                <!-- Preview Section -->
-                                <div id="previewSection" style="display: none; margin-top: 20px;">
-                                    <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; background-color: #f9f9f9;">
-                                        <img id="sketchPreview" src="" alt="Sketch Preview" style="max-width: 100%; max-height: 250px; border-radius: 5px;">
-                                        <p class="mt-3 mb-1"><small style="color: #666;"><strong>File Selected:</strong> <span id="fileName"></span></small></p>
-                                    </div>
-                                </div>
-
-                                <button type="submit" id="generateBtn" class="btn btn-primary btn-block mt-4" style="background-color: var(--primary-color); border-color: var(--primary-color); width: 100%; padding: 12px; font-weight: bold; border-radius: 8px;">
-                                    <i class="fas fa-magic"></i> Generate Design
-                                </button>
-                            </form>
+                            </div>
                             
-                            <!-- Loading Spinner -->
-                            <div id="loadingSpinner" style="display: none; text-align: center; margin-top: 20px;">
-                                <div class="spinner-border" style="color: var(--primary-color);" role="status">
-                                    <span class="sr-only">Loading...</span>
+                            <!-- Preview Section -->
+                            <div id="previewSection" class="preview-section">
+                                <div class="preview-container">
+                                    <img id="sketchPreview" src="" alt="Sketch Preview" class="preview-image">
+                                    <p class="preview-label"><small><strong>File Selected:</strong> <span id="fileName"></span></small></p>
                                 </div>
-                                <p class="mt-3" style="color: var(--primary-color);">Generating your jewelry design using AI...</p>
+                            </div>
+
+                            <button type="submit" id="generateBtn" class="btn-generate">
+                                <i class="fas fa-magic"></i> Generate Design
+                            </button>
+                        </form>
+                        
+                        <!-- Loading Spinner -->
+                        <div id="loadingSpinner" class="loading-spinner">
+                            <div class="spinner-border"></div>
+                            <p>Generating your jewelry design using AI...</p>
+                        </div>
+                    </div>
+
+                    <!-- Result Section -->
+                    <div class="result-section">
+                        <h6 class="section-title">
+                            <i class="fas fa-gem"></i> Generated Design
+                        </h6>
+                        <div id="resultSection" class="result-container">
+                            <div class="result-content">
+                                <img id="generatedDesign" src="" alt="Generated Jewelry Design" class="result-image">
+                                <div class="result-info">
+                                    <h6 class="result-label">Design Prompt</h6>
+                                    <p id="designPromptText" class="result-text"></p>
+                                    <button class="btn-download" onclick="downloadDesign()">
+                                        <i class="fas fa-download"></i> Download Design
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Result Section -->
-                        <div class="col-md-6">
-                            <h6 class="mb-4" style="color: var(--primary-color); font-weight: bold;">
-                                <i class="fas fa-gem"></i> Generated Design
-                            </h6>
-                            <div id="resultSection" style="display: none;">
-                                <div style="border: 1px solid #ddd; border-radius: 8px; overflow: hidden; background-color: #f9f9f9;">
-                                    <img id="generatedDesign" src="" alt="Generated Jewelry Design" style="max-width: 100%; height: auto; display: block;">
-                                    <div style="padding: 15px; border-top: 1px solid #ddd;">
-                                        <h6 style="margin-bottom: 10px; color: var(--primary-color);">Design Prompt</h6>
-                                        <p id="designPromptText" style="font-size: 13px; color: #666; max-height: 150px; overflow-y: auto; margin-bottom: 0;"></p>
-                                        <button class="btn btn-sm mt-3" style="background-color: var(--primary-color); color: white; border-radius: 5px;" onclick="downloadDesign()">
-                                            <i class="fas fa-download"></i> Download Design
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                        <!-- No Design Message -->
+                        <div id="noDesignMessage" class="no-design-message">
+                            <i class="fas fa-image"></i>
+                            <p>Your generated design will appear here</p>
+                        </div>
 
-                            <!-- No Design Message -->
-                            <div id="noDesignMessage" style="text-align: center; padding: 40px 20px; color: #999;">
-                                <i class="fas fa-image" style="font-size: 48px; color: #ddd; display: block; margin-bottom: 15px;"></i>
-                                <p>Your generated design will appear here</p>
-                            </div>
-
-                            <!-- Error Message -->
-                            <div id="errorMessage" style="display: none; padding: 15px; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; color: #721c24; margin-top: 15px;">
-                                <i class="fas fa-exclamation-circle"></i> <strong>Error:</strong> <span id="errorText"></span>
-                            </div>
+                        <!-- Error Message -->
+                        <div id="errorMessage" class="error-message">
+                            <i class="fas fa-exclamation-circle"></i> <strong>Error:</strong> <span id="errorText"></span>
                         </div>
                     </div>
                 </div>
@@ -123,60 +110,478 @@
 </div>
 
 <style>
-    .badge-success {
-        background-color: #28a745;
-        color: white;
+    :root {
+        --primary-yellow: #FFD966;
+        --text-main: #2D2D2D;
+        --text-secondary: #666;
+        --bg-light: #FAFAFA;
+        --border-light: #E0E0E0;
+        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.12);
+        --shadow-lg: 0 15px 40px rgba(0, 0, 0, 0.1);
     }
 
-    #uploadArea:hover {
-        background-color: rgba(218, 165, 32, 0.1);
-        border-color: var(--primary-color);
-        transform: scale(1.02);
+    .dashboard-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
     }
 
-    #uploadArea.drag-over {
-        background-color: rgba(218, 165, 32, 0.2);
-        border-color: var(--primary-color);
-        border-style: solid;
+    /* Welcome Section */
+    .welcome-section {
+        margin-bottom: 50px;
     }
 
-    .btn-primary {
-        transition: all 0.3s ease;
+    .welcome-card {
+        background: linear-gradient(135deg, rgba(255, 217, 102, 0.15) 0%, rgba(255, 217, 102, 0.1) 100%);
+        border-radius: 40px;
+        padding: 60px 40px;
+        text-align: center;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 217, 102, 0.3);
+        box-shadow: 0 10px 30px rgba(255, 217, 102, 0.1);
     }
 
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(218, 165, 32, 0.3);
+    .welcome-icon {
+        font-size: 80px;
+        margin-bottom: 20px;
+        color: var(--primary-yellow);
     }
 
-    /* Selection Styling */
-    #selectionsContent select {
-        background-color: #666;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 10px 15px;
+    .welcome-title {
+        font-size: 48px;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 15px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .welcome-title span {
+        color: var(--primary-yellow);
+    }
+
+    .welcome-subtitle {
+        font-size: 18px;
+        color: var(--text-secondary);
+        margin-bottom: 0;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* Design Generator Section */
+    .design-generator-section {
+        margin-bottom: 30px;
+    }
+
+    .design-card {
+        background: white;
+        border-radius: 40px;
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .design-card-header {
+        background: linear-gradient(135deg, var(--primary-yellow) 0%, #f2cc5b 100%);
+        padding: 35px 40px;
+        color: var(--text-main);
+    }
+
+    .design-title {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .design-subtitle {
+        font-size: 15px;
+        color: rgba(45, 45, 45, 0.8);
+        margin-bottom: 0;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .design-card-body {
+        padding: 45px;
+    }
+
+    .design-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 50px;
+    }
+
+    .upload-section,
+    .result-section {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* Selections */
+    .selections-container {
+        margin-bottom: 25px;
+    }
+
+    .selections-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .selections-content {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .selections-content select {
+        background-color: #f0f0f0;
+        color: var(--text-main);
+        border: 2px solid transparent;
+        border-radius: 25px;
+        padding: 12px 18px;
         font-weight: 500;
         cursor: pointer;
         transition: all 0.3s ease;
         flex: 1;
-        min-width: 200px;
-        font-size: 14px;
+        min-width: 180px;
+        font-size: 13px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
-    #selectionsContent select:hover {
-        background-color: #555;
+    .selections-content select:hover {
+        background-color: #e8e8e8;
+        border-color: var(--primary-yellow);
     }
 
-    #selectionsContent select:focus {
+    .selections-content select:focus {
         outline: none;
-        background-color: #555;
-        box-shadow: 0 0 5px rgba(218, 165, 32, 0.5);
+        background-color: white;
+        border-color: var(--primary-yellow);
+        box-shadow: 0 0 12px rgba(255, 217, 102, 0.4);
     }
 
-    #selectionsContent select option {
-        background-color: #555;
-        color: white;
+    /* Upload Area */
+    .form-group {
+        margin-bottom: 0;
+    }
+
+    .upload-area {
+        border: 3px dashed #ddd;
+        border-radius: 30px;
+        padding: 50px 30px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background-color: var(--bg-light);
+    }
+
+    .upload-area:hover {
+        background-color: #f5f5f5;
+        border-color: var(--primary-yellow);
+        transform: translateY(-3px);
+    }
+
+    .upload-area.drag-over {
+        background-color: rgba(255, 217, 102, 0.15);
+        border-color: var(--primary-yellow);
+        border-style: solid;
+    }
+
+    .upload-icon {
+        font-size: 60px;
+        margin-bottom: 15px;
+        color: var(--primary-yellow);
+    }
+
+    .upload-label {
+        color: var(--text-main);
+        margin-bottom: 8px;
+        font-weight: 600;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .upload-sublabel {
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .upload-hint {
+        color: #999;
+        display: block;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* Preview Section */
+    .preview-section {
+        display: none;
+        margin-top: 25px;
+    }
+
+    .preview-container {
+        border: 2px solid var(--border-light);
+        border-radius: 25px;
+        padding: 15px;
+        background-color: var(--bg-light);
+    }
+
+    .preview-image {
+        max-width: 100%;
+        max-height: 280px;
+        border-radius: 20px;
+        display: block;
+        margin: 0 auto;
+    }
+
+    .preview-label {
+        margin-top: 12px;
+        margin-bottom: 0;
+        color: var(--text-secondary);
+        font-size: 13px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* Buttons */
+    .btn-generate,
+    .btn-download {
+        background: linear-gradient(135deg, var(--primary-yellow) 0%, #f2cc5b 100%);
+        border: none;
+        color: var(--text-main);
+        font-weight: 600;
+        border-radius: 25px;
+        padding: 15px 28px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 25px;
+        box-shadow: var(--shadow-sm);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .btn-generate {
+        width: 100%;
+    }
+
+    .btn-generate:hover,
+    .btn-download:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(255, 217, 102, 0.4);
+    }
+
+    .btn-download {
+        width: auto;
+    }
+
+    /* Loading Spinner */
+    .loading-spinner {
+        display: none;
+        text-align: center;
+        margin-top: 30px;
+    }
+
+    .loading-spinner .spinner-border {
+        width: 50px;
+        height: 50px;
+        border: 4px solid #f0f0f0;
+        border-top: 4px solid var(--primary-yellow);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .loading-spinner p {
+        margin-top: 15px;
+        color: var(--text-main);
+        font-weight: 500;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* Result Section */
+    .result-container {
+        display: none;
+        margin-top: 0;
+    }
+
+    .result-content {
+        border: 2px solid var(--border-light);
+        border-radius: 25px;
+        overflow: hidden;
+        background-color: var(--bg-light);
+    }
+
+    .result-image {
+        max-width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .result-info {
+        padding: 25px;
+        border-top: 2px solid var(--border-light);
+    }
+
+    .result-label {
+        margin-bottom: 10px;
+        color: var(--text-main);
+        font-weight: 600;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .result-text {
+        font-size: 13px;
+        color: var(--text-secondary);
+        max-height: 150px;
+        overflow-y: auto;
+        margin-bottom: 0;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        line-height: 1.6;
+    }
+
+    /* No Design Message */
+    .no-design-message {
+        text-align: center;
+        padding: 60px 30px;
+        color: #ddd;
+    }
+
+    .no-design-message i {
+        font-size: 70px;
+        display: block;
+        margin-bottom: 15px;
+        color: #e0e0e0;
+    }
+
+    .no-design-message p {
+        margin: 0;
+        color: #bbb;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* Error Message */
+    .error-message {
+        display: none;
+        padding: 18px 22px;
+        background-color: rgba(220, 53, 69, 0.1);
+        border: 2px solid rgba(220, 53, 69, 0.3);
+        border-radius: 20px;
+        color: #dc3545;
+        margin-top: 20px;
+        font-size: 14px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .design-content {
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+
+        .design-card-body {
+            padding: 35px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-container {
+            padding: 20px 15px;
+        }
+
+        .welcome-card {
+            padding: 40px 20px;
+            border-radius: 30px;
+        }
+
+        .welcome-icon {
+            font-size: 60px;
+        }
+
+        .welcome-title {
+            font-size: 32px;
+        }
+
+        .welcome-subtitle {
+            font-size: 16px;
+        }
+
+        .design-card-body {
+            padding: 25px;
+        }
+
+        .design-content {
+            gap: 30px;
+        }
+
+        .selections-content select {
+            min-width: 140px;
+            padding: 10px 15px;
+        }
+
+        .upload-area {
+            padding: 35px 20px;
+            border-radius: 25px;
+        }
+
+        .upload-icon {
+            font-size: 50px;
+        }
+
+        .btn-generate {
+            padding: 13px 24px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .dashboard-container {
+            padding: 15px 10px;
+        }
+
+        .welcome-title {
+            font-size: 24px;
+        }
+
+        .design-title {
+            font-size: 20px;
+        }
+
+        .section-title {
+            font-size: 16px;
+        }
+
+        .selections-content {
+            gap: 8px;
+        }
+
+        .selections-content select {
+            flex: 0 1 100%;
+            min-width: auto;
+        }
     }
 </style>
 
