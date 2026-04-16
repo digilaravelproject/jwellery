@@ -870,10 +870,16 @@
 
                 if (data.success) {
                     if (data.design_type === 'image') {
-                        document.getElementById('generatedDesign').src = data.design_url;
+                        // document.getElementById('generatedDesign').src = data.design_url;
+
+                        document.getElementById('generatedDesign').src =
+                            data.design_url.replace('/storage/', '/storage/app/public/');
+
                         generatedDesignUrl = data.design_url;
                     } else {
-                        document.getElementById('generatedDesign').src = data.sketch_url;
+                        // document.getElementById('generatedDesign').src = data.sketch_url;
+
+                        document.getElementById('generatedDesign').src = data.sketch_url.replace('/storage/', '/storage/app/public/');
                         generatedDesignUrl = data.sketch_url;
                     }
                     document.getElementById('designPromptText').textContent = data.design_specification;
@@ -898,8 +904,16 @@
 
     function downloadDesign() {
         // Get the current design URL from the img element
+        // const designImg = document.getElementById('generatedDesign');
+        // const designUrl = designImg ? designImg.src : null;
+
         const designImg = document.getElementById('generatedDesign');
-        const designUrl = designImg ? designImg.src : null;
+
+        let designUrl = designImg ? designImg.src : null;
+
+        if (designUrl) {
+            designUrl = designUrl.replace('/storage/', '/storage/app/public/');
+        }
         
         if (designUrl && designUrl.trim() !== '') {
             // Create a link element and trigger download

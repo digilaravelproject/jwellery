@@ -79,7 +79,8 @@
                             <i class="fas fa-image"></i> Uploaded Sketch
                         </h6>
                         @if(!empty($design->sketch_path))
-                            <img src="{{ Storage::url($design->sketch_path) }}" alt="Sketch" style="max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #ddd;">
+                            <img src="{{ asset('storage/app/public/' . $design->sketch_path) }}"
+                            alt="Sketch" style="max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #ddd;">
                             <p class="mt-2 text-muted"><small>Path: {{ $design->sketch_path }}</small></p>
                         @else
                             <div class="alert alert-warning">
@@ -94,7 +95,7 @@
                             <i class="fas fa-wand-magic-sparkles"></i> Generated Design
                         </h6>
                         @if($design->design_type === 'image' && !empty($design->generated_design_path))
-                            <img src="{{ Storage::url($design->generated_design_path) }}" alt="Generated Design" style="max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #ddd;">
+                            <img src="{{ asset('storage/app/public/' . $design->generated_design_path) }}" alt="Generated Design" style="max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #ddd;">
                             <p class="mt-2 text-muted"><small>Path: {{ $design->generated_design_path }}</small></p>
                         @else
                             <div class="alert alert-info">

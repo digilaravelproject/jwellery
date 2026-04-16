@@ -64,7 +64,7 @@
         </div>
 
         <!-- Demo Credentials Info -->
-        <div class="credentials-card">
+        <?php /*<div class="credentials-card">
             <div class="credentials-header">
                 <i class="fas fa-key"></i> Demo Admin Credentials
             </div>
@@ -73,7 +73,7 @@
                 <p class="credential-item"><strong>Password:</strong> password</p>
                 <small class="credential-hint">* First create an admin account using artisan command or by seeding</small>
             </div>
-        </div>
+        </div> */?>
     </div>
 </div>
 

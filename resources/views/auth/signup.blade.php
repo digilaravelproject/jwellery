@@ -60,7 +60,7 @@
 
 <div class="image-side-content position-relative d-none d-lg-block">
     <div class="image-side-content">
-        <img src="{{ asset('Silver-Jewellery.png') }}" class="jewellery-img" alt="Jewellery">
+        <img src="{{ asset('public/Silver-Jewellery.png') }}" class="jewellery-img" alt="Jewellery">
     </div>
 </div>
 

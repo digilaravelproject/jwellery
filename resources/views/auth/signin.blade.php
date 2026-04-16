@@ -31,17 +31,17 @@
 
             <button type="submit" class="btn btn-primary-custom w-100 mb-4">Submit</button>
         </form>
-        <div class="text-center">
+        <?php /*<div class="text-center">
             <span class="small text-muted">Don't have an account? 
                 <a href="{{ route('signup') }}" class="text-dark fw-bold text-decoration-none">Sign up</a>
             </span>
-        </div>
+        </div>*/ ?>
     </div>
 </div>
 
 <div class="image-side-content position-relative d-none d-lg-block">
     <div class="image-side-content">
-        <img src="{{ asset('Silver-Jewellery.png') }}" class="jewellery-img">
+        <img src="{{ asset('public/Silver-Jewellery.png') }}" class="jewellery-img">
     </div>
 </div>
 
