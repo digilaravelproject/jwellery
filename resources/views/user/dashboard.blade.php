@@ -46,6 +46,21 @@
                                 </div>
                             </div>
 
+                            <!-- Custom Design Notes Textarea -->
+                            <div class="form-group mt-4">
+                                <label for="designNotes" class="textarea-label">
+                                    <i class="fas fa-pen-fancy"></i> Design Notes (Optional)
+                                </label>
+                                <textarea 
+                                    id="designNotes" 
+                                    name="design_notes" 
+                                    class="design-notes-textarea"
+                                    placeholder="Describe your jewelry design ideas, style preferences, materials, or any specific requirements (e.g., 'Gold pendant with diamonds', 'Minimalist silver ring', 'Traditional ethnic necklace')..."
+                                    rows="5">
+                                </textarea>
+                                <small class="textarea-hint">Your notes will be added to the AI design prompt to generate more personalized results.</small>
+                            </div>
+
                             <!-- Selections - Display in One Row -->
                             <div id="selectionsContainer" class="selections-container mt-3">
                                 <h6 class="selections-title">
@@ -297,6 +312,71 @@
         background-color: #f5f5f5;
         border-color: var(--primary-yellow);
         transform: translateY(-3px);
+    }
+
+    /* Design Notes Textarea */
+    .textarea-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .design-notes-textarea {
+        width: 100%;
+
+        /* Set proper height */
+        height: 44px;          /* single-line look */
+        min-height: 44px;
+
+        /* Reduce vertical padding */
+        padding: 10px 18px;
+
+        border: 2px solid var(--border-light);
+        border-radius: 25px;
+
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        line-height: 1.4;
+
+        color: var(--text-main);
+        background-color: var(--bg-light);
+
+        /* Remove resize icon */
+        resize: none;
+
+        /* Prevent scrollbar arrows */
+        overflow: hidden;
+
+        transition: all 0.3s ease;
+    }
+
+    .design-notes-textarea:hover {
+        background-color: white;
+        border-color: rgba(255, 217, 102, 0.5);
+    }
+
+    .design-notes-textarea:focus {
+        outline: none;
+        background-color: white;
+        border-color: var(--primary-yellow);
+        box-shadow: 0 0 12px rgba(255, 217, 102, 0.3);
+    }
+
+    .design-notes-textarea::placeholder {
+        color: rgba(45, 45, 45, 0.4);
+    }
+
+    .textarea-hint {
+        display: block;
+        margin-top: 8px;
+        color: var(--text-secondary);
+        font-size: 12px;
+        font-family: 'Inter', sans-serif;
     }
 
     .upload-area.drag-over {
@@ -717,8 +797,16 @@
             formData.append('sketch', file);
             formData.append('_token', document.querySelector('input[name="_token"]').value);
 
-            // Add user selections to form data
+            // Add user selections and design notes to form data
             let customPromptPart = '';
+            
+            // Add design notes from textarea if provided
+            const designNotes = document.getElementById('designNotes').value.trim();
+            if (designNotes) {
+                customPromptPart += designNotes + ' ';
+            }
+            
+            // Add user selections from dropdowns
             for (const selectionId in userSelections) {
                 const selection = userSelections[selectionId];
                 if (selection.value) {

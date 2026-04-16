@@ -19,6 +19,7 @@ use App\Http\Controllers\DebugAIController;
 Route::middleware('guest')->group(function () {
     Route::get('/signup', [AuthController::class, 'showSignup'])->name('signup');
     Route::post('/signup', [AuthController::class, 'signup']);
+    // Route::get('/', [AuthController::class, 'showSignin'])->name('signin');
     Route::get('/signin', [AuthController::class, 'showSignin'])->name('signin');
     Route::post('/signin', [AuthController::class, 'signin']);
 });
