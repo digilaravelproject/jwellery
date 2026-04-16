@@ -46,10 +46,10 @@
                                 <tr>
                                     <td><strong>#{{ $user->id }}</strong></td>
                                     <td>
-                                        <div class="d-flex align-items-center">
+                                        <?php /*<div class="d-flex align-items-center">
                                             <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #2c3e50, #34495e); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 10px;">
                                                 {{ substr($user->name, 0, 1) }}
-                                            </div>
+                                            </div>*/ ?>
                                             <span>{{ $user->name }}</span>
                                         </div>
                                     </td>
@@ -61,20 +61,22 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <a href="{{ route('admin.users.show', $user->id) }}" class="btn btn-sm btn-view" title="View">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-sm btn-edit" title="Edit">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" style="display: inline;" 
-                                              onsubmit="return confirm('Are you sure you want to delete this user? This action cannot be undone.');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-delete" title="Delete">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
+                                        <div style="display: flex; gap: 6px; align-items: center; flex-wrap: nowrap;">
+                                            <a href="{{ route('admin.users.show', $user->id) }}" class="btn btn-sm btn-view" title="View">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-sm btn-edit" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" style="display: inline; margin: 0;" 
+                                                  onsubmit="return confirm('Are you sure you want to delete this user? This action cannot be undone.');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-delete" title="Delete" style="margin: 0;">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
@@ -83,9 +85,7 @@
                 </div>
 
                 <!-- Pagination -->
-                <div class="d-flex justify-content-center">
-                    {{ $users->links() }}
-                </div>
+                {{ $users->links() }}
             @else
                 <div class="alert alert-info text-center py-5" role="alert">
                     <i class="fas fa-inbox" style="font-size: 48px; color: #17a2b8; margin-bottom: 15px;"></i>

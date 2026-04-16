@@ -69,7 +69,7 @@
                                 </div>
                             @endforeach
                         </div>
-                        <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addValue()">
+                        <button type="button" class="btn btn-sm mt-2" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white; border-radius: 15px;" onclick="addValue()">
                             <i class="fas fa-plus"></i> Add Another Value
                         </button>
                         @error('values')
@@ -90,10 +90,10 @@
 
                     <!-- Submit Buttons -->
                     <div class="form-group">
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn" style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%); color: white; border-radius: 20px; font-weight: 600; padding: 10px 25px;">
                             <i class="fas fa-save"></i> Update Selection
                         </button>
-                        <a href="{{ route('admin.selections.index') }}" class="btn btn-secondary">
+                        <a href="{{ route('admin.selections.index') }}" class="btn" style="background: #999; color: white; border-radius: 20px; font-weight: 600; padding: 10px 25px;">
                             <i class="fas fa-times"></i> Cancel
                         </a>
                     </div>

@@ -34,14 +34,6 @@
                         <form id="sketchUploadForm" enctype="multipart/form-data">
                             @csrf
 
-                            <!-- Selections - Display in One Row -->
-                            <div id="selectionsContainer" class="selections-container">
-                                <h6 class="selections-title">
-                                    <i class="fas fa-sliders-h"></i> Design Options
-                                </h6>
-                                <div id="selectionsContent" class="selections-content"></div>
-                            </div>
-
                             <div class="form-group">
                                 <div class="upload-area" id="uploadArea">
                                     <div class="upload-icon">
@@ -52,6 +44,14 @@
                                     <small class="upload-hint">Supported: JPG, PNG, GIF (Max 5MB)</small>
                                     <input type="file" id="sketchInput" name="sketch" accept="image/*" style="display: none;">
                                 </div>
+                            </div>
+
+                            <!-- Selections - Display in One Row -->
+                            <div id="selectionsContainer" class="selections-container mt-3">
+                                <h6 class="selections-title">
+                                    <i class="fas fa-sliders-h"></i> Design Options
+                                </h6>
+                                <div id="selectionsContent" class="selections-content"></div>
                             </div>
                             
                             <!-- Preview Section -->

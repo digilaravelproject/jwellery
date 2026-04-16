@@ -6,9 +6,9 @@
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0"><i class="fas fa-comment-dots"></i> AI Prompts</h5>
-        <button class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#addPromptModal" style="color: var(--primary-color); font-weight: bold;">
+        <?php /*<button class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#addPromptModal" style="color: var(--primary-color); font-weight: bold;">
             <i class="fas fa-plus"></i> Add New Prompt
-        </button>
+        </button>*/ ?>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -49,13 +49,13 @@
                                 <i class="fas fa-edit"></i>
                             </button>
                             
-                            <form action="{{ route('admin.ai.prompts.delete', $prompt->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this prompt?')">
+                            <!-- <form action="{{ route('admin.ai.prompts.delete', $prompt->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this prompt?')">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-delete" title="Delete" style="padding: 5px 10px; font-size: 12px;">
                                     <i class="fas fa-trash"></i>
                                 </button>
-                            </form>
+                            </form> -->
                         </td>
                     </tr>
 

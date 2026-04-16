@@ -11,7 +11,7 @@
                 <h5 class="mb-0">
                     <i class="fas fa-layer-group"></i> Design Selections
                 </h5>
-                <a href="{{ route('admin.selections.create') }}" class="btn btn-success btn-sm">
+                <a href="{{ route('admin.selections.create') }}" class="btn" style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%); color: white; border-radius: 20px; font-weight: 600;">
                     <i class="fas fa-plus"></i> Add New Selection
                 </a>
             </div>
@@ -50,17 +50,17 @@
                                         <td>
                                             <div style="max-height: 60px; overflow-y: auto;">
                                                 @foreach($selection->values as $value)
-                                                    <span class="badge bg-info" style="margin-right: 5px; margin-bottom: 3px;">{{ $value }}</span>
+                                                    <span class="badge" style="background-color: #FFD966; color: #2D2D2D; margin-right: 5px; margin-bottom: 3px; font-weight: 600;">{{ $value }}</span>
                                                 @endforeach
                                             </div>
                                         </td>
                                         <td>
                                             @if($selection->is_active)
-                                                <span class="badge bg-success">
+                                                <span class="badge" style="background-color: #27ae60; color: white;">
                                                     <i class="fas fa-check-circle"></i> Active
                                                 </span>
                                             @else
-                                                <span class="badge bg-secondary">
+                                                <span class="badge" style="background-color: #999; color: white;">
                                                     <i class="fas fa-times-circle"></i> Inactive
                                                 </span>
                                             @endif

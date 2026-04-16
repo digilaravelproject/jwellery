@@ -81,5 +81,61 @@ class AuthController extends Controller
 
         return redirect('/signin')->with('success', 'Logged out successfully!');
     }
+
+    // Show edit profile form (in modal data)
+    public function editProfile()
+    {
+        $user = Auth::user();
+        return response()->json([
+            'user' => $user
+        ]);
+    }
+
+    // Update user profile
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'current_password' => 'nullable|string',
+            'password' => 'nullable|confirmed|min:6',
+        ], [
+            'name.required' => 'Name is required',
+            'email.required' => 'Email is required',
+            'email.unique' => 'Email is already in use',
+            'password.confirmed' => 'Passwords do not match',
+            'password.min' => 'Password must be at least 6 characters',
+        ]);
+
+        // Check current password if new password is provided
+        if (!empty($validated['password'])) {
+            if (!isset($validated['current_password'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Current password is required to set a new password'
+                ], 422);
+            }
+
+            if (!Hash::check($validated['current_password'], $user->password)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Current password is incorrect'
+                ], 422);
+            }
+
+            $user->password = Hash::make($validated['password']);
+        }
+
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profile updated successfully!'
+        ]);
+    }
 }
 

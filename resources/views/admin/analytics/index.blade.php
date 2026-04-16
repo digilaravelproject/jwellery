@@ -53,17 +53,17 @@
                                         </td>
                                         <td>
                                             @if($design->design_type === 'image')
-                                                <span class="badge bg-primary">
+                                                <span class="badge" style="background-color: #3498db; color: white;">
                                                     <i class="fas fa-image"></i> Image
                                                 </span>
                                             @else
-                                                <span class="badge bg-info">
+                                                <span class="badge" style="background-color: #9b59b6; color: white;">
                                                     <i class="fas fa-file-alt"></i> Specification
                                                 </span>
                                             @endif
                                         </td>
                                         <td>
-                                            <span class="badge bg-secondary">{{ ucfirst($design->ai_provider ?? 'Unknown') }}</span>
+                                            <span class="badge" style="background-color: #FFD966; color: #2D2D2D; font-weight: 600;">{{ ucfirst($design->ai_provider ?? 'Unknown') }}</span>
                                         </td>
                                         <td>
                                             <small style="max-width: 250px; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">

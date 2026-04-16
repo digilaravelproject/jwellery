@@ -32,6 +32,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/design/generate', [JewelryDesignController::class, 'generateDesign'])->name('design.generate');
     Route::get('/design/designs', [JewelryDesignController::class, 'getDesigns'])->name('design.list');
     
+    // User Profile Routes
+    Route::get('/profile/edit', [AuthController::class, 'editProfile'])->name('profile.edit');
+    Route::post('/profile/update', [AuthController::class, 'updateProfile'])->name('profile.update');
+    
     // Selections API for frontend
     Route::get('/selections/active', [SelectionManagementController::class, 'getActive'])->name('selections.active');
     
@@ -90,6 +94,10 @@ Route::middleware('guest')->prefix('admin')->group(function () {
 Route::middleware('admin')->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminAuthController::class, 'dashboard'])->name('admin.dashboard');
     Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
+    
+    // Admin Profile Routes
+    Route::get('/profile/edit', [AdminAuthController::class, 'editProfile'])->name('admin.profile.edit');
+    Route::post('/profile/update', [AdminAuthController::class, 'updateProfile'])->name('admin.profile.update');
     
     // User Management Routes
     Route::resource('users', AdminUserController::class, ['as' => 'admin']);

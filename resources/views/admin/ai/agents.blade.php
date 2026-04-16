@@ -4,165 +4,290 @@
 @section('page-title', 'AI Agents Selection')
 
 @section('content')
+    <style>
+        .agent-config-container {
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 25px;
+        }
+
+        .agent-config-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .agent-config-title i {
+            color: var(--primary-yellow);
+            font-size: 24px;
+        }
+
+        .agent-config-subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 0;
+        }
+
+        .model-section {
+            background: linear-gradient(135deg, #F9F7F2 0%, #FFFBF0 100%);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(255, 217, 102, 0.2);
+        }
+
+        .model-field {
+            margin-bottom: 20px;
+        }
+
+        .model-field label {
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .model-field input {
+            border-radius: 20px;
+            border: 2px solid #ddd;
+            padding: 12px 16px;
+            font-size: 14px;
+            width: 100%;
+            transition: all 0.3s ease;
+            background-color: white;
+        }
+
+        .model-field input:focus {
+            outline: none;
+            border-color: var(--primary-yellow);
+            box-shadow: 0 0 0 0.2rem rgba(255, 217, 102, 0.3);
+            background-color: white;
+        }
+
+        .model-hint {
+            font-size: 13px;
+            color: #666;
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        .btn-save-config {
+            background: linear-gradient(135deg, var(--primary-yellow) 0%, #f2cc5b 100%);
+            border: none;
+            color: var(--text-main);
+            font-weight: 600;
+            border-radius: 20px;
+            padding: 12px 28px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-save-config:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 217, 102, 0.4);
+            color: var(--text-main);
+        }
+
+        .alert-custom {
+            background: rgba(255, 217, 102, 0.15);
+            border: 2px solid rgba(255, 217, 102, 0.3);
+            border-radius: 20px;
+            padding: 18px 20px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .alert-custom i {
+            color: var(--primary-yellow);
+            margin-right: 10px;
+            font-weight: 600;
+        }
+
+        .alert-custom strong {
+            color: var(--text-main);
+        }
+
+        .alert-custom ul {
+            margin: 10px 0 0 20px;
+        }
+
+        .alert-custom li {
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .provider-select {
+            border-radius: 20px;
+            border: 2px solid #ddd;
+            padding: 12px 16px;
+            max-width: 400px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .provider-select:focus {
+            outline: none;
+            border-color: var(--primary-yellow);
+            box-shadow: 0 0 0 0.2rem rgba(255, 217, 102, 0.3);
+        }
+    </style>
+
     <div class="container-fluid">
         <!-- Header -->
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <h3><i class="fas fa-cogs"></i> AI Agent Configuration</h3>
-                <p class="text-muted">Select which AI provider to use for different features in your application</p>
+        <div class="agent-config-container">
+            <div class="agent-config-title">
+                <i class="fas fa-cogs"></i> AI Agent Configuration
             </div>
+            <p class="agent-config-subtitle">Select which AI provider to use for different features in your application</p>
         </div>
 
         <!-- Jewelry Design Feature -->
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <i class="fas fa-ring"></i> Jewelry Design Generation
-                    </div>
-                    <div class="card-body">
-                        <!-- Feature Support Info -->
-                        <div class="alert alert-info" role="alert">
-                            <i class="fas fa-info-circle"></i>
-                            <strong>Feature Support:</strong>
-                            <ul class="mb-0 mt-2">
-                                <li><strong>OpenAI:</strong> ✅ Full support (Sketch analysis + Image generation)</li>
-                                <li><strong>Open Router:</strong> ⚠️ Partial support (Sketch analysis only - for image generation, you need OpenAI)</li>
-                            </ul>
+        <div class="agent-config-container">
+            <div class="agent-config-title">
+                <i class="fas fa-ring"></i> Jewelry Design Generation
+            </div>
+
+            <!-- Feature Support Info -->
+            <div class="alert-custom">
+                <i class="fas fa-info-circle"></i>
+                <strong>Feature Support:</strong>
+                <ul class="mb-0 mt-2">
+                    <li><strong>OpenAI:</strong> ✅ Full support (Sketch analysis + Image generation)</li>
+                    <li><strong>Open Router:</strong> ⚠️ Partial support (Sketch analysis only - for image generation, you need OpenAI)</li>
+                </ul>
+            </div>
+
+            <div style="margin-bottom: 25px;">
+                <label style="font-weight: 600; color: var(--text-main); display: block; margin-bottom: 10px;">Select AI Provider</label>
+                <select class="provider-select" id="design_provider" onchange="loadModels('design_generation')">
+                    <option value="">-- Select Provider --</option>
+                    @foreach($activeCredentials as $credential)
+                        <option value="{{ $credential->id }}" 
+                            {{ $selections->where('feature', 'design_generation')->first()?->ai_credential_id == $credential->id ? 'selected' : '' }}
+                            data-provider="{{ $credential->provider->name }}">
+                            {{ $credential->provider->display_name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Store current model values as data -->
+            @php
+                $currentSelection = $selections->where('feature', 'design_generation')->first();
+            @endphp
+            <div id="current_models" 
+                data-vision="{{ $currentSelection?->vision_model }}"
+                data-image="{{ $currentSelection?->image_model }}"
+                data-text="{{ $currentSelection?->text_model }}"
+                style="display: none;"></div>
+
+            <div id="design_models" style="display: none;">
+                <div id="provider_warning" class="alert-custom" style="display: none; margin-bottom: 20px;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <strong>Note:</strong> <span id="warning_text"></span>
+                </div>
+
+                <div class="model-section">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                        <div class="model-field">
+                            <label for="design_vision_model"><i class="fas fa-eye" style="color: var(--primary-yellow);\"></i>Vision Model (for analyzing sketches)</label>
+                            <input type="text" id="design_vision_model" placeholder="e.g., gpt-4o">
+                            <div class="model-hint">Model used to analyze your jewelry sketches</div>
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Select AI Provider</label>
-                                <select class="form-control" id="design_provider" onchange="loadModels('design_generation')">
-                                    <option value="">-- Select Provider --</option>
-                                    @foreach($activeCredentials as $credential)
-                                        <option value="{{ $credential->id }}" 
-                                            {{ $selections->where('feature', 'design_generation')->first()?->ai_credential_id == $credential->id ? 'selected' : '' }}
-                                            data-provider="{{ $credential->provider->name }}">
-                                            {{ $credential->provider->display_name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
+                        <div class="model-field">
+                            <label for="design_image_model"><i class="fas fa-image" style="color: var(--primary-yellow);\"></i>Image Model (for generating designs)</label>
+                            <input type="text" id="design_image_model" placeholder="e.g., dall-e-3">
+                            <div class="model-hint">Model used to generate final jewelry images</div>
                         </div>
 
-                        <!-- Store current model values as data -->
-                        @php
-                            $currentSelection = $selections->where('feature', 'design_generation')->first();
-                        @endphp
-                        <div id="current_models" 
-                            data-vision="{{ $currentSelection?->vision_model }}"
-                            data-image="{{ $currentSelection?->image_model }}"
-                            data-text="{{ $currentSelection?->text_model }}"
-                            style="display: none;"></div>
-
-                        <div id="design_models" class="row" style="display: none;">
-                            <div class="col-md-12 mb-3">
-                                <div id="provider_warning" class="alert alert-warning d-none" role="alert">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                    <strong>Note:</strong> <span id="warning_text"></span>
-                                </div>
-                            </div>
-
-                            <div class="col-md-4 mb-3">
-                                <label for="design_vision_model" class="form-label">Vision Model (for analyzing sketches)</label>
-                                <input type="text" class="form-control" id="design_vision_model" placeholder="e.g., gpt-4o">
-                                <small class="form-text text-muted">Model used to analyze your jewelry sketches</small>
-                            </div>
-
-                            <div class="col-md-4 mb-3">
-                                <label for="design_image_model" class="form-label">Image Model (for generating designs)</label>
-                                <input type="text" class="form-control" id="design_image_model" placeholder="e.g., dall-e-3">
-                                <small class="form-text text-muted">Model used to generate final jewelry images</small>
-                            </div>
-
-                            <div class="col-md-4 mb-3">
-                                <label for="design_text_model" class="form-label">Text Model (for descriptions)</label>
-                                <input type="text" class="form-control" id="design_text_model" placeholder="e.g., gpt-4o">
-                                <small class="form-text text-muted">Model used to generate text descriptions</small>
-                            </div>
+                        <div class="model-field">
+                            <label for="design_text_model"><i class="fas fa-pen" style="color: var(--primary-yellow);\"></i>Text Model (for descriptions)</label>
+                            <input type="text" id="design_text_model" placeholder="e.g., gpt-4o">
+                            <div class="model-hint">Model used to generate text descriptions</div>
                         </div>
-
-                        <button class="btn btn-success" onclick="saveAgentSelection('design_generation')">
-                            <i class="fas fa-save"></i> Save Configuration
-                        </button>
                     </div>
                 </div>
+
+                <button class="btn-save-config" onclick="saveAgentSelection('design_generation')">
+                    <i class="fas fa-save"></i> Save Configuration
+                </button>
             </div>
         </div>
 
         <!-- Additional Feature Placeholder -->
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body text-center py-5">
-                        <i class="fas fa-star" style="font-size: 36px; color: #ffc107; margin-bottom: 15px;"></i>
-                        <h5>More Features Coming Soon</h5>
-                        <p class="text-muted">Additional AI-powered features will be available in future updates</p>
-                    </div>
-                </div>
+        <div class="agent-config-container">
+            <div style="text-align: center; padding: 30px 0;">
+                <i class="fas fa-star" style="font-size: 48px; color: var(--primary-yellow); margin-bottom: 15px; display: block;\"></i>
+                <h5 style="color: var(--text-main); font-weight: 700; margin: 15px 0;\">More Features Coming Soon</h5>
+                <p style="color: #666; margin: 0;\">Additional AI-powered features will be available in future updates</p>
             </div>
         </div>
 
         <!-- Current Configuration -->
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <i class="fas fa-info-circle"></i> Current Configuration
-                    </div>
-                    <div class="card-body">
-                        @if($selections->count() > 0)
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Feature</th>
-                                        <th>Provider</th>
-                                        <th>Models</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($selections as $selection)
-                                        <tr>
-                                            <td>
-                                                <strong>{{ ucwords(str_replace('_', ' ', $selection->feature)) }}</strong>
-                                            </td>
-                                            <td>
-                                                <i class="fas {{ $selection->credential->provider->name === 'openai' ? 'fa-brain' : 'fa-route' }}"></i>
-                                                {{ $selection->credential->provider->display_name }}
-                                            </td>
-                                            <td>
-                                                <small>
-                                                    @if($selection->vision_model)
-                                                        <span class="badge bg-primary">Vision: {{ $selection->vision_model }}</span>
-                                                    @endif
-                                                    @if($selection->image_model)
-                                                        <span class="badge bg-info">Image: {{ $selection->image_model }}</span>
-                                                    @endif
-                                                    @if($selection->text_model)
-                                                        <span class="badge bg-secondary">Text: {{ $selection->text_model }}</span>
-                                                    @endif
-                                                </small>
-                                            </td>
-                                            <td>
-                                                @if($selection->is_active)
-                                                    <span class="badge bg-success">Active</span>
-                                                @else
-                                                    <span class="badge bg-secondary">Inactive</span>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        @else
-                            <p class="text-muted">No AI agents configured yet. Please configure above.</p>
-                        @endif
-                    </div>
-                </div>
+        <div class="agent-config-container">
+            <div class="agent-config-title">
+                <i class="fas fa-info-circle"></i> Current Configuration
             </div>
+
+            @if($selections->count() > 0)
+                <div style="overflow-x: auto;">
+                    <table class="table" style="margin: 0;">
+                        <thead>
+                            <tr>
+                                <th style="font-weight: 700; padding: 15px 20px; border-bottom: 2px solid #ddd;">Feature</th>
+                                <th style="font-weight: 700; padding: 15px 20px; border-bottom: 2px solid #ddd;">Provider</th>
+                                <th style="font-weight: 700; padding: 15px 20px; border-bottom: 2px solid #ddd;">Models</th>
+                                <th style="font-weight: 700; padding: 15px 20px; border-bottom: 2px solid #ddd;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($selections as $selection)
+                                <tr style="border-bottom: 1px solid #eee;">
+                                    <td style="padding: 15px 20px; color: var(--text-main);">
+                                        <strong>{{ ucwords(str_replace('_', ' ', $selection->feature)) }}</strong>
+                                    </td>
+                                    <td style="padding: 15px 20px; color: #666;">
+                                        <i class="fas {{ $selection->credential->provider->name === 'openai' ? 'fa-brain' : 'fa-route' }}" style="color: var(--primary-yellow); margin-right: 8px;\"></i>
+                                        {{ $selection->credential->provider->display_name }}
+                                    </td>
+                                    <td style="padding: 15px 20px;">
+                                        <small style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                            @if($selection->vision_model)
+                                                <span style="background-color: var(--primary-yellow); color: var(--text-main); padding: 4px 10px; border-radius: 15px; font-weight: 500; font-size: 12px;">Vision: {{ $selection->vision_model }}</span>
+                                            @endif
+                                            @if($selection->image_model)
+                                                <span style="background-color: #3498db; color: white; padding: 4px 10px; border-radius: 15px; font-weight: 500; font-size: 12px;">Image: {{ $selection->image_model }}</span>
+                                            @endif
+                                            @if($selection->text_model)
+                                                <span style="background-color: #666; color: white; padding: 4px 10px; border-radius: 15px; font-weight: 500; font-size: 12px;">Text: {{ $selection->text_model }}</span>
+                                            @endif
+                                        </small>
+                                    </td>
+                                    <td style="padding: 15px 20px;">
+                                        @if($selection->is_active)
+                                            <span style="background-color: #27ae60; color: white; padding: 4px 12px; border-radius: 15px; font-weight: 500; font-size: 12px;\">Active</span>
+                                        @else
+                                            <span style="background-color: #999; color: white; padding: 4px 12px; border-radius: 15px; font-weight: 500; font-size: 12px;\">Inactive</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <p style="color: #666; font-size: 14px; margin: 0;\">No AI agents configured yet. Please configure above.</p>
+            @endif
         </div>
     </div>
 

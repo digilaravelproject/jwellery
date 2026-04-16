@@ -6,7 +6,7 @@
 @section('content')
 <div class="row">
     <div class="col-md-12">
-        <a href="{{ route('admin.analytics.index') }}" class="btn btn-secondary btn-sm mb-3">
+        <a href="{{ route('admin.analytics.index') }}" class="btn btn-sm mb-3" style="background: #999; color: white; border-radius: 15px;">
             <i class="fas fa-arrow-left"></i> Back to Records
         </a>
 
@@ -40,7 +40,7 @@
                     </div>
 
                     <div class="col-md-6">
-                        <h6 style="color: var(--primary-color); font-weight: bold; margin-bottom: 15px;">
+                        <h6 style="color: var(--primary-yellow); font-weight: bold; margin-bottom: 15px;">
                             <i class="fas fa-info-circle"></i> Design Information
                         </h6>
                         <table class="table table-sm" style="border: none;">
@@ -52,15 +52,15 @@
                                 <td style="border: none;"><strong>Design Type:</strong></td>
                                 <td style="border: none;">
                                     @if($design->design_type === 'image')
-                                        <span class="badge bg-primary"><i class="fas fa-image"></i> Image</span>
+                                        <span class="badge" style="background-color: #3498db; color: white;"><i class="fas fa-image"></i> Image</span>
                                     @else
-                                        <span class="badge bg-info"><i class="fas fa-file-alt"></i> Specification</span>
+                                        <span class="badge" style="background-color: #9b59b6; color: white;"><i class="fas fa-file-alt"></i> Specification</span>
                                     @endif
                                 </td>
                             </tr>
                             <tr>
                                 <td style="border: none;"><strong>AI Provider:</strong></td>
-                                <td style="border: none;"><span class="badge bg-secondary">{{ ucfirst($design->ai_provider ?? 'Unknown') }}</span></td>
+                                <td style="border: none;"><span class="badge" style="background-color: #FFD966; color: #2D2D2D; font-weight: 600;">{{ ucfirst($design->ai_provider ?? 'Unknown') }}</span></td>
                             </tr>
                             <tr>
                                 <td style="border: none;"><strong>Generated:</strong></td>
@@ -90,7 +90,7 @@
 
                     <!-- Generated Design -->
                     <div class="col-md-6">
-                        <h6 style="color: var(--primary-color); font-weight: bold; margin-bottom: 15px;">
+                        <h6 style="color: var(--primary-yellow); font-weight: bold; margin-bottom: 15px;">
                             <i class="fas fa-wand-magic-sparkles"></i> Generated Design
                         </h6>
                         @if($design->design_type === 'image' && !empty($design->generated_design_path))
@@ -108,10 +108,10 @@
 
                 <!-- Prompt -->
                 <div class="mb-4">
-                    <h6 style="color: var(--primary-color); font-weight: bold; margin-bottom: 15px;">
+                    <h6 style="color: var(--primary-yellow); font-weight: bold; margin-bottom: 15px;">
                         <i class="fas fa-file-alt"></i> Generation Prompt
                     </h6>
-                    <div style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; max-height: 300px; overflow-y: auto;">
+                    <div style="background-color: #f0f0f0; border: 2px solid #FFD966; border-radius: 20px; padding: 15px; max-height: 300px; overflow-y: auto;">
                         <p style="font-size: 13px; color: #666; margin: 0; white-space: pre-wrap; word-wrap: break-word;">
                             {{ $design->prompt }}
                         </p>
@@ -120,10 +120,10 @@
 
                 <!-- Design Specification -->
                 <div class="mb-4">
-                    <h6 style="color: var(--primary-color); font-weight: bold; margin-bottom: 15px;">
+                    <h6 style="color: var(--primary-yellow); font-weight: bold; margin-bottom: 15px;">
                         <i class="fas fa-description"></i> Design Specification/Description
                     </h6>
-                    <div style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 15px; max-height: 300px; overflow-y: auto;">
+                    <div style="background-color: #f0f0f0; border: 2px solid #FFD966; border-radius: 20px; padding: 15px; max-height: 300px; overflow-y: auto;">
                         <p style="font-size: 13px; color: #666; margin: 0; white-space: pre-wrap; word-wrap: break-word;">
                             {{ $design->design_specification }}
                         </p>
@@ -134,13 +134,13 @@
 
                 <!-- Actions -->
                 <div class="d-flex gap-2">
-                    <a href="{{ route('admin.analytics.index') }}" class="btn btn-secondary">
+                    <a href="{{ route('admin.analytics.index') }}" class="btn" style="background: #999; color: white; border-radius: 20px; font-weight: 600;">
                         <i class="fas fa-arrow-left"></i> Back to Records
                     </a>
                     <form action="{{ route('admin.analytics.destroy', $design->id) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Are you sure? This will delete the record and associated files.');">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger">
+                        <button type="submit" class="btn" style="background: #dc3545; color: white; border-radius: 20px; font-weight: 600;">
                             <i class="fas fa-trash"></i> Delete Record
                         </button>
                     </form>
